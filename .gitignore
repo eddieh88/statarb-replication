@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.venv/
+.claude/
+cache/
+*.parquet
+.env
+.env.*
+*api_key*
+*.key
+*.pem
+
+# results ARE tracked: a pre-registration is worthless if the result can be
+# quietly regenerated after the fact.
