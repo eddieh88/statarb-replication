@@ -109,18 +109,32 @@ def _chunks(t_arr, size):
         yield np.isin(t_arr, blk)
 
 
-def fit_eval(E: np.ndarray, epochs=30, seed=0, log=None):
+class LinearSig(nn.Module):
+    """Minimal-capacity control: one linear map from the 30-day cumulative
+    residual window to a weight. 31 parameters vs the CNN+Transformer's 1,049.
+    Identical training protocol and identical Sharpe objective -- only the
+    architecture differs, so the comparison isolates model capacity."""
+    def __init__(self):
+        super().__init__()
+        self.lin = nn.Linear(L, 1)
+    def forward(self, x):
+        return torch.tanh(self.lin(x).squeeze(-1))
+
+
+def fit_eval(E: np.ndarray, epochs=30, seed=0, log=None, arch=None, dev=None):
     torch.manual_seed(seed)
+    arch = arch or CNNTrans
+    dev = dev or DEV
     x, y, t = windows(E)
     oos, starts = [], list(range(TRAIN, int(t.max())-TEST, TEST))
     for si, s in enumerate(starts):
         trm = (t >= s-TRAIN) & (t < s)
         tem = (t >= s) & (t < s+TEST)
         if trm.sum() < 1000 or tem.sum() < 100: continue
-        m = CNNTrans().to(DEV); opt = torch.optim.Adam(m.parameters(), lr=1e-3)
+        m = arch().to(dev); opt = torch.optim.Adam(m.parameters(), lr=1e-3)
         xtr, ytr, ttr = x[trm], y[trm], t[trm]
-        batches = [(torch.tensor(xtr[b], device=DEV), torch.tensor(ytr[b], device=DEV),
-                    torch.tensor(pd.factorize(ttr[b])[0], device=DEV))
+        batches = [(torch.tensor(xtr[b], device=dev), torch.tensor(ytr[b], device=dev),
+                    torch.tensor(pd.factorize(ttr[b])[0], device=dev))
                    for b in _chunks(ttr, BATCH_DAYS)]
         for _ in range(epochs):
             for xb, yb, tb in batches:
@@ -131,17 +145,17 @@ def fit_eval(E: np.ndarray, epochs=30, seed=0, log=None):
         xte, yte, tte = x[tem], y[tem], t[tem]
         with torch.no_grad():
             for b in _chunks(tte, BATCH_DAYS):
-                xb = torch.tensor(xte[b], device=DEV)
-                yb = torch.tensor(yte[b], device=DEV)
-                tb = torch.tensor(pd.factorize(tte[b])[0], device=DEV)
+                xb = torch.tensor(xte[b], device=dev)
+                yb = torch.tensor(yte[b], device=dev)
+                tb = torch.tensor(pd.factorize(tte[b])[0], device=dev)
                 nt = int(tb.max())+1
                 w = m(xb)
-                num = torch.zeros(nt, device=DEV).index_add_(0, tb, w*yb)
-                den = torch.zeros(nt, device=DEV).index_add_(0, tb, w.abs())
+                num = torch.zeros(nt, device=dev).index_add_(0, tb, w*yb)
+                den = torch.zeros(nt, device=dev).index_add_(0, tb, w.abs())
                 r = (num/den.clamp(min=1e-8)).cpu().numpy()
                 oos.append(r[np.isfinite(r)])
         del batches
-        if DEV == "mps": torch.mps.empty_cache()
+        if dev == "mps": torch.mps.empty_cache()
         if log: log(f"    block {si+1}/{len(starts)}")
     r = np.concatenate(oos)
     return float(r.mean()/r.std()*np.sqrt(252)), r
