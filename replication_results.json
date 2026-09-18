@@ -1,0 +1,12 @@
+{
+  "ar1_name": -0.011335012483746408,
+  "ar1_rank": -0.15868822166510366,
+  "null_rank_median": -0.15875928810214845,
+  "null_rank_p5": -0.1688469294683679,
+  "null_name_median": -0.0012506037988819175,
+  "frac_null_le_obs": 0.5,
+  "n_names": 985,
+  "n_days": 5109,
+  "n_null": 30,
+  "factor_share": 0.4
+}

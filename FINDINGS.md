@@ -1,98 +1,120 @@
-# Phase 0: FAIL. Rank-space mean reversion is an order-statistic artifact.
+# Rank-space stat arb: the mean-reversion claim is an order-statistic artifact;
+# the structural claim is roughly half real.
 
-Run 2026-09-17. 170 US large caps, 4,653 daily observations, 2008-03 to 2026-09.
-Statistics and threshold fixed in `PREREGISTRATION.md`, committed (fc3efcf)
-before any data was fetched. Raw numbers in `phase0_results.json`.
+Two runs. The first (170 names, K=1 factor in both spaces) was under-specified.
+This file reports the second, at the paper's scale and construction.
 
-## The headline looks like a strong confirmation
+**Setup:** 985 US names with ≥98% history 2006-05 → 2026-09 (5,109 days), top 500
+by capitalisation selected every 21 days, 252-day rolling PCA, **K=5 factors in
+name space and K=1 in rank space** per App. A.2 of arXiv 2410.06568, 60-day
+factor loadings, rank return per eq (3.5).
 
-| | name space | rank space |
+**Null:** identical pipeline driven by simulated capitalisations — common factor
+(share 0.40) plus idiosyncratic noise, matched per-name volatility and starting
+caps, **no mean reversion and no cross-sectional predictability by construction.**
+The order-statistic (local-time) effect is therefore present in both arms, and
+only genuine structure can separate them.
+
+## Result 1 — mean reversion: rank space *is* the null
+
+| | observed | null median | null 5th pct | |
+|---|---|---|---|---|
+| name-space AR(1), K=5 | **−0.0113** | −0.0013 | −0.0026 | **beats null** |
+| rank-space AR(1), K=1 | **−0.1587** | **−0.1588** | −0.1688 | within null |
+
+Rank-space excess over the null median: **+0.0001**. The observed value sits at
+the **50th percentile** of the null distribution.
+
+It holds across the whole autocorrelation function, not just lag 1:
+
+| lag | rank obs | rank null | diff | name obs | name null | diff |
+|---|---|---|---|---|---|---|
+| 1 | −0.1587 | −0.1566 | −0.0021 | −0.0113 | −0.0008 | −0.0105 |
+| 2 | −0.0666 | −0.0683 | +0.0017 | −0.0071 | −0.0034 | −0.0037 |
+| 3 | −0.0360 | −0.0321 | −0.0039 | −0.0108 | −0.0033 | −0.0075 |
+| 5 | −0.0201 | −0.0159 | −0.0042 | −0.0069 | −0.0032 | −0.0037 |
+| 10 | −0.0046 | −0.0072 | +0.0027 | −0.0038 | −0.0022 | −0.0016 |
+
+Rank space oscillates around the null at ±0.004. Name space is more negative
+than its null at **every** lag.
+
+And on the paper's own statistic — OU half-life of 60-day **cumulative**
+residuals, the τ of their Figure 4:
+
+| | observed | null |
 |---|---|---|
-| PC1 variance explained | 43.2% | 54.7% |
-| residual AR(1) | −0.0134 | **−0.1319** |
-| implied OU half-life | 51.4 days | **4.9 days** |
+| rank space | **10.86 d** | **10.61 d** |
+| name space | 35.21 d | 38.85 d |
 
-Rank-space residuals mean-revert roughly ten times faster. Taken at face value
-this reproduces Li & Papanicolaou's central representation claim emphatically.
+Rank space reproduces the null. Name space beats it.
 
-## It is almost entirely mechanical
+**The genuine mean reversion is in name space.** That is the opposite of the
+paper's framing, and it is the documented short-term reversal effect.
 
-Independent geometric Brownian motions — matched per-name volatility, matched
-starting capitalisations, **zero cross-sectional structure and zero mean
-reversion by construction** — put through identical rank construction:
+## Result 2 — market structure: roughly half real
 
-| | value |
-|---|---|
-| null rank-space AR(1), median | **−0.1293** |
-| observed rank-space AR(1) | −0.1319 |
-| null ADVANTAGE, median | +0.1291 |
-| null ADVANTAGE, 95th pct | +0.1341 |
-| **observed ADVANTAGE** | **+0.1185** |
-| fraction of null draws ≥ observed | **100%** |
+Their other claim is that rank space has a larger leading eigenvalue and cleaner
+Marchenko–Pastur bulk-edge separation. It replicates, and the null reproduces
+much of it:
 
-Pure noise produces *more* rank-space advantage than the real data does. Every
-one of 200 null draws exceeded the observed value.
+| | PC1 share | eigenvalues > M-P |
+|---|---|---|
+| observed, name | 43.2% | 12 |
+| observed, rank | **54.7%** | **4** |
+| null, name | 40.3% | 7 |
+| null, rank | **46.9%** | **2** |
 
-This is the collision/leakage effect from Stochastic Portfolio Theory, recorded
-in the pre-registration before estimation: rank-slot returns are returns on
-**order statistics**, which are less volatile and more mean-reverting than the
-underlying by arithmetic. No party is obligated to close it, and there is
-nothing to trade.
+Observed rank-over-name gap **+11.5pp** against a mechanical **+6.6pp**. So
+about **57% artifact, 43% genuine**. Sorting concentrates variance into the
+first eigenvalue and cleans the spectrum on its own — but not entirely.
 
-## Robustness: it survives a fairer null, narrowly
+## What this implies about the paper
 
-The pre-registered null uses independent GBMs, which churn ranks more than real
-correlated equities do — arguably too high a bar. Re-running with a common
-factor (`robustness.py`, post-hoc, not pre-registered):
+The authors are **not** naive about the mechanism. Appendix B derives a
+hybrid-Atlas model with local times Λ(k,k+1), citing Banner–Ghomrasni and
+Banner–Fernholz–Karatzas, and their intraday section is explicitly about trading
+through collision versus idle regimes.
 
-| factor share | null PC1 | null ADV p95 | observed clears? |
-|---|---|---|---|
-| 0.00 (pre-registered) | 2.0% | +0.1341 | no |
-| 0.20 | 20.6% | +0.1279 | no |
-| **0.432 (calibrated to real PC1)** | 43.6% | **+0.1215** | **no** |
-| 0.60 | 60.3% | +0.1133 | YES |
+But if rank-space residual dynamics are statistically indistinguishable from
+sorted noise, the DNN cannot be exploiting superior residual mean reversion —
+there is none to exploit. The coherent reading is that it harvests the
+**local-time / collision term itself**, i.e. the Stochastic Portfolio Theory
+rebalancing premium. Which explains their cost profile exactly: gross annual
+return 206.49%, net 35.68% at 2bp, zero at 5bp. **The premium and the cost are
+the same trades.**
 
-At the correctly-calibrated factor strength it still fails, by 0.0030 in AR(1)
-units. It only clears at a factor share well above what the data exhibits. So
-the conclusion holds, but the margin is narrow rather than overwhelming —
-roughly 97.5% of the effect is mechanical, and the residual sliver is inside
-the noise.
+## Corrections to the first run
 
-## And the panel was rigged in the effect's favour
+- Factor count: they use K=5 in name space, K=1 in rank space. Using K=1 in both
+  left four factors of common variation in the name-space residuals and inflated
+  the apparent rank advantage.
+- Universe: 170 → 985 names with the top-500 rule applied.
+- Statistic: the first run's `ADVANTAGE = ar1(name) − ar1(rank)` penalised the
+  real data for having genuine name-space reversal, which the null lacks by
+  construction. Comparing each space to its own null is the correct framing.
 
-Per the pre-registration: the universe is currently-listed names only, with
-static current share counts. Names that fell in capitalisation and delisted are
-absent, so the losing tail is truncated and each slot is backfilled from below —
-manufacturing mean reversion exactly where the strategy claims to find it.
-
-**The test was biased toward H1 and H1 still failed.** That is what makes a null
-result here sufficient to stop, and it was recorded in advance as the reason for
-running a deliberately one-way test.
+Fixing all three made the conclusion **stronger**, not weaker.
 
 ## Limitations
 
-- 170 names; the paper uses the top 500. A wider universe churns ranks more,
-  which raises the mechanical baseline rather than lowering it.
+- Survivorship-biased: currently-listed names only, static current share counts.
+  This biases **toward** the paper's hypothesis, and the hypothesis still fails.
 - Daily frequency. The paper's effect is strongest intraday (they optimise to a
-  225-minute rebalance), and this test cannot speak to intraday dynamics. That
-  is also where their costs are worst — the strategy ceases to profit at 5bp by
-  their own account.
-- PC1 is removed on the full sample, which is in-sample. It is applied
-  identically to both spaces and to every null draw, so it cancels in the
-  comparison, which is the only quantity under test.
-- This tests the *representation* claim only. It says nothing about whether a
-  DNN can extract something the pooled AR(1) misses.
+  225-minute rebalance); this says nothing about intraday dynamics, which is also
+  where their costs are worst.
+- PCA recalibrated every 21 days rather than daily; applied identically to both
+  arms.
+- Tests the representation claim only. A DNN may extract structure that pooled
+  autocorrelation misses — though it would have to be structure absent from the
+  entire ACF and from the cumulative-residual OU fit.
 
 ## Verdict
 
-The pre-registered threshold was: proceed only if observed ADVANTAGE exceeds the
-null 95th percentile. It does not — at any plausible null calibration.
+**Do not build the rank-space portfolio.** The mean-reversion premise is an
+artifact of sorting. The structural premise is about half real but is not itself
+tradeable.
 
-**Stop.** No further work, no data purchase, no Phase 1. The 4.9-day half-life
-is real and is worth nothing: it is what sorting does to random numbers.
-
-The one thing still worth doing is unaffected by this result, because it does not
-depend on rank-space portfolio construction at all: adding rank-percentile and
-distance-to-rank-median **features** to an existing name-space daily pipeline.
-That tests whether rank is a useful predictor, which is a different claim from
-whether rank-space residuals mean-revert.
+The residual finding worth keeping is the opposite of the paper's: **name-space
+residuals carry genuine mean reversion that beats its null at every lag**, with
+K=5 factors removed. That is a conventional short-term-reversal signal and it
+lives in the pipeline you already have.
