@@ -36,5 +36,5 @@ for k in real:
     print(f"{k:24}{real[k]:>8.2f}{nv.mean():>11.2f}{nv.std():>9.2f}{real[k]-nv.mean():>9.2f}")
     res[k]=dict(real=real[k], null_mean=float(nv.mean()), null_sd=float(nv.std()),
                 excess=float(real[k]-nv.mean()), nulls=nv.tolist())
-json.dump(res, open("real_null_results.json","w"), indent=2)
+json.dump(res, open("results/real_null_results.json", "w"), indent=2)
 print("\npaper Table I, PCA-5 gross: OU+Threshold 0.73")
