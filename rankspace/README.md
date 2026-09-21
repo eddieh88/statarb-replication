@@ -37,3 +37,13 @@ python3 rankspace/run_replication.py
 
 `PREREGISTRATION.md` was committed before any estimation; `FINDINGS.md` is the
 writeup.
+
+### Exit codes
+
+`ranktest.py` returns **1** when the pre-registered Phase 0 test *fails* — which
+on this data it does, by design. That is the scientific verdict, not a crash:
+the script runs to completion and writes `results/phase0_results.json` either
+way. Do not treat a non-zero exit here as a broken script.
+
+It also reads prices from `cache/`. With a cold cache it hits yfinance, which
+rate-limits, so the first run can fail transiently. Re-run it.

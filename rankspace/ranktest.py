@@ -103,7 +103,7 @@ def main() -> int:
                n_obs=int(len(name_ret)), phase0_pass=ok)
     with open("results/phase0_results.json", "w") as f:
         json.dump(out, f, indent=2, default=float)
-    print("\nwrote phase0_results.json")
+    print("\nwrote results/phase0_results.json")
     return 0 if ok else 1
 
 
