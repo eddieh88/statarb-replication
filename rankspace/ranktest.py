@@ -101,7 +101,7 @@ def main() -> int:
     out = dict(observed=obs, null_p95=p95, null_median=float(np.median(nadv)),
                frac_null_ge_obs=frac, n_names=int(name_ret.shape[1]),
                n_obs=int(len(name_ret)), phase0_pass=ok)
-    with open("phase0_results.json", "w") as f:
+    with open("results/phase0_results.json", "w") as f:
         json.dump(out, f, indent=2, default=float)
     print("\nwrote phase0_results.json")
     return 0 if ok else 1

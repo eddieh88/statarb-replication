@@ -45,5 +45,5 @@ json.dump(dict(ar1_name=an, ar1_rank=ar, null_rank_median=float(np.median(nar_r)
                null_name_median=float(np.median(nar_n)),
                frac_null_le_obs=float(np.mean(nar_r<=ar)), n_names=len(cols),
                n_days=len(cap), n_null=N_NULL, factor_share=share),
-          open("replication_results.json","w"), indent=2)
+          open("results/replication_results.json", "w"), indent=2)
 print("\nwrote replication_results.json")
