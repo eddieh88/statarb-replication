@@ -38,4 +38,6 @@ caught.
 | Step 2 — longer holding periods | — | — | **dropped** — ACF shows no reversion beyond lag 10 |
 | Step 3 — OSAP characteristics | `PREREG_characteristics.md` | yes | **DEAD** — [`FINDINGS_characteristics.md`](FINDINGS_characteristics.md) |
 
+| Step 4 — delayed overshoot | `PREREG_delayed.md` | yes | **DEAD** — [`FINDINGS_delayed.md`](FINDINGS_delayed.md), beats its null, loses to costs |
+
 Reasoning for the ordering: [`../NEXT_STEPS.md`](../NEXT_STEPS.md).
