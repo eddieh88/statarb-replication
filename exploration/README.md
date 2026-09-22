@@ -42,4 +42,6 @@ caught.
 
 | Step 5 — intraday | `PREREG_intraday.md` | yes | **NOT INTRADAY** — [`FINDINGS_intraday.md`](FINDINGS_intraday.md); timing decay ~2%, a prior claim retracted |
 
+| Step 6 — continuation | `PREREG_continuation.md` | yes | **DEAD** — [`FINDINGS_continuation.md`](FINDINGS_continuation.md); gross zero both directions |
+
 Reasoning for the ordering: [`../NEXT_STEPS.md`](../NEXT_STEPS.md).
