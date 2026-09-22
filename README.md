@@ -291,14 +291,58 @@ so the comparison is not symmetric. We have not shown the network fails at the
 paper's own configuration — only that it earns nothing at ours, while a
 zero-parameter rule on identical inputs earns more.
 
-### What the whole thing amounts to
+### What the whole thing amounts to — and a correction
 
-The strategy is paid liquidity provision: somebody must sell urgently, pushes a
-price below where its peers say it belongs, and you warehouse the risk until it
-normalises. That is a service fee, not a mispricing, and service fees compete
-away. Nothing broke — the market got better at absorbing its own shocks.
+The obvious reading is that the strategy sold liquidity provision — somebody must
+sell urgently, pushes a price below where its peers say it belongs, you warehouse
+the risk — and that this service fee was competed away.
 
-Next steps and the reasoning behind them: **[NEXT_STEPS.md](NEXT_STEPS.md)**.
+**That explanation was tested in Part 3 and falsified.** Crowding predicts the
+signal should persist where competing capital cannot reach. It does not: gross
+Sharpe is within one standard error of zero in all five liquidity bands, from
+$160M median daily volume down to $1M, with no gradient.
+
+What actually changed:
+
+| era | residual vol/day | cross-sectional dispersion | **AR(1)** |
+|---|---|---|---|
+| 2002–2008 | 2.060% | 3.910% | **−0.0269** |
+| 2009–2016 | 1.740% | 3.252% | −0.0110 |
+| 2017–2026 | **2.078%** | **3.713%** | **−0.0018** |
+
+Idiosyncratic volatility and dispersion in 2017–2026 **exceed** 2009–2016 and
+nearly match 2002–2008. Stocks move on their own news as much as they ever did.
+What collapsed by 93% is the single quantity reversal trades.
+
+**The overshoot stopped forming.** Prices still move on stock-specific news and
+flow; those moves now stick. The service is not being provided by someone else
+more cheaply — it is no longer required.
+
+## Part 3 — what else was tested (`exploration/`)
+
+Three pre-registered experiments, each with its statistic, null and thresholds
+fixed before the data was touched. All three came back negative.
+
+| experiment | verdict |
+|---|---|
+| liquidity deciles — does it survive where crowding cannot reach? | **FALSIFIED** — flat across all five bands |
+| longer holding periods | **dropped** — the ACF shows no reversion beyond lag 10 |
+| 209 published characteristics, monthly | **DEAD** — inside its own null |
+
+Reversion did not migrate to longer horizons; it **compressed**. Lag 1 is dead,
+lags 2–5 survive (at lag 5, more strongly than in either earlier era), and beyond
+lag 10 there is nothing. Total available reversion is **18%** of 2002–2008 — and
+harvesting a 2–5 day window costs 3× the turnover the surviving edge can fund.
+
+The characteristics test required rebuilding the permno↔ticker crosswalk, which
+had mapped **1,438 live names and zero delisted**. Survivorship-free it covers
+7,638 symbols, 44.8% dead, validated at r = 0.9998 on a held-out signal against
+0.2094 shuffled. The composite then scores +0.24 net — beaten by two of ten null
+draws — and **+0.20 of that comes from OSAP's sign alignment**, an orientation
+chosen on historical data. Strip it and the composite is +0.04.
+
+Details: [`exploration/`](exploration/). Remaining directions:
+[NEXT_STEPS.md](NEXT_STEPS.md).
 
 ## Reproducing
 
