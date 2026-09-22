@@ -44,4 +44,6 @@ caught.
 
 | Step 6 — continuation | `PREREG_continuation.md` | yes | **DEAD** — [`FINDINGS_continuation.md`](FINDINGS_continuation.md); gross zero both directions |
 
+| Step 7 — index reversion | `PREREG_market.md` | yes | **DEAD** — [`FINDINGS_market.md`](FINDINGS_market.md); measurement stands, strategy unstable |
+
 Reasoning for the ordering: [`../NEXT_STEPS.md`](../NEXT_STEPS.md).

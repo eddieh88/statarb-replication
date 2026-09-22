@@ -62,13 +62,27 @@ futures or an ETF short has financing embedded in the price, not a borrow fee.
 
 Report gross, turnover, breakeven, and the equal-weight/cap-weight gap.
 
-## The null, fixed now
+## The null
 
-**Block bootstrap of the return series**, 21-day blocks, 200 draws. This
-preserves volatility clustering and the marginal distribution while destroying
-serial dependence at the daily horizon — which is precisely the claim. A
-sign-flip or iid shuffle would not do: iid shuffling destroys the volatility
-clustering that a vol-scaled signal partly trades.
+**AMENDED after the first run, and the amendment is recorded rather than the
+original quietly replaced.**
+
+**Original, and wrong.** A 21-day block bootstrap, on the stated reasoning that
+it "destroys serial dependence at the daily horizon". It does not: a 21-day block
+keeps 20 of its 21 consecutive pairs intact, so ~95% of the daily autocorrelation
+survives. The run confirmed it — null median +0.12 against a real +0.12
+(equal-weight) and +0.38 against +0.37 (cap-weight). The null reproduced the real
+result because it essentially *was* the real series. No verdict is taken from it.
+
+**Replacement.** Decompose returns as `r_t = sigma_t * z_t`, with sigma_t the
+trailing 63-day volatility. **Shuffle the z's** and re-impose the original
+sigma path. This preserves the volatility clustering a vol-scaled signal partly
+trades, and destroys daily serial dependence completely rather than partially.
+200 draws.
+
+This is the same error as the sign-flip null in Part 1, which left every
+|residual| intact and passed a strategy that timed volatility. A null must break
+the specific claim; "roughly similar data" is not a null.
 
 ## Decision thresholds
 
