@@ -320,29 +320,55 @@ more cheaply — it is no longer required.
 
 ## Part 3 — what else was tested (`exploration/`)
 
-Three pre-registered experiments, each with its statistic, null and thresholds
-fixed before the data was touched. All three came back negative.
+Six pre-registered experiments, each with its statistic, null and thresholds
+fixed before the data was touched.
 
 | experiment | verdict |
 |---|---|
 | liquidity deciles — does it survive where crowding cannot reach? | **FALSIFIED** — flat across all five bands |
-| longer holding periods | **dropped** — the ACF shows no reversion beyond lag 10 |
+| longer holding periods | **dropped** — no reversion beyond lag 10 |
 | 209 published characteristics, monthly | **DEAD** — inside its own null |
+| delayed overshoot — is it a timing failure? | **DEAD** — beats its null, loses to costs |
+| did the overshoot move intraday? | **NOT INTRADAY** — and it flipped sign |
+| continuation — does the flipped sign pay? | **DEAD** — gross zero in both directions |
 
-Reversion did not migrate to longer horizons; it **compressed**. Lag 1 is dead,
-lags 2–5 survive (at lag 5, more strongly than in either earlier era), and beyond
-lag 10 there is nothing. Total available reversion is **18%** of 2002–2008 — and
-harvesting a 2–5 day window costs 3× the turnover the surviving edge can fund.
+### The mechanism
 
-The characteristics test required rebuilding the permno↔ticker crosswalk, which
-had mapped **1,438 live names and zero delisted**. Survivorship-free it covers
-7,638 symbols, 44.8% dead, validated at r = 0.9998 on a held-out signal against
-0.2094 shuffled. The composite then scores +0.24 net — beaten by two of ten null
-draws — and **+0.20 of that comes from OSAP's sign alignment**, an orientation
-chosen on historical data. Strip it and the composite is +0.04.
+Reversal did not decay. **It became continuation**, measured three independent
+ways at three timescales:
 
-Details: [`exploration/`](exploration/). Remaining directions:
-[NEXT_STEPS.md](NEXT_STEPS.md).
+| measurement | early era | modern era |
+|---|---|---|
+| intraday, morning → afternoon | −0.0051 / −0.0772 | **+0.0219** |
+| daily lag 1, large moves | −0.0262 | **+0.0036** |
+| daily lag 1, all moves | −0.0269 | −0.0018 |
+
+Idiosyncratic dispersion is **unchanged** — 2.078%/day in 2017–2026, above
+2009–2016 and near 2002–2008. Stocks move on their own news as much as ever.
+What vanished is the bounce.
+
+And neither direction is tradeable. Continuation's gross Sharpe is **+0.01**;
+reversal's is −0.03. Both lose the same amount to identical turnover. **For
+portfolio purposes the modern residual is unforecastable from its own past in
+either direction** — a martingale difference in practice, which is what an
+efficient price looks like.
+
+### Two corrections this produced
+
+**The crowding explanation was wrong.** Competing capital predicts the signal
+should survive where that capital cannot go. It does not: gross is within one
+standard error of zero in every liquidity band from $160M median daily volume
+down to $1M, with no gradient.
+
+**And one of my own claims was wrong.** This project repeatedly argued that L=1
+reversal is structurally unexecutable because its signal is determined by the
+price it must trade at. Measured against 5-minute data, the 15:45→close move
+carries 4% of a day's cross-sectional variance: a 15:45 signal is ~98% correlated
+with a close signal. It is a 2% degradation, not a structural flaw. L=1 died
+because large moves now continue at lag 1.
+
+Details in [`exploration/`](exploration/), one pre-registration and one findings
+document per step.
 
 ## Reproducing
 
