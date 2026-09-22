@@ -40,4 +40,6 @@ caught.
 
 | Step 4 — delayed overshoot | `PREREG_delayed.md` | yes | **DEAD** — [`FINDINGS_delayed.md`](FINDINGS_delayed.md), beats its null, loses to costs |
 
+| Step 5 — intraday | `PREREG_intraday.md` | yes | **NOT INTRADAY** — [`FINDINGS_intraday.md`](FINDINGS_intraday.md); timing decay ~2%, a prior claim retracted |
+
 Reasoning for the ordering: [`../NEXT_STEPS.md`](../NEXT_STEPS.md).
