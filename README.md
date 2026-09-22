@@ -1,4 +1,9 @@
-# Deep Learning Statistical Arbitrage — an independent replication, and what survives costs
+# Deep learning statistical arbitrage: a replication, and a test of whether it still works
+
+Two studies. **Part 1** replicates the paper on the authors' own residuals
+(1998–2016). **Part 2** buys survivorship-free data and asks whether any of it
+survives into 2017–2026. The answer to Part 2 is no, and getting there required
+correcting a result this README previously reported.
 
 A line-by-line replication of **"Deep Learning Statistical Arbitrage"**
 (Guijarro-Ordonez, Pelger & Zanotti, [arXiv:2106.04028](https://arxiv.org/abs/2106.04028)),
@@ -196,29 +201,104 @@ can be quietly regenerated after the fact.
 
 ---
 
-## What is still open
+## Part 2 — does it still work? (survivorship-free, 2000–2026)
 
-**Did any of this survive past 2016?** The authors' residuals end 2016-12. Our own
-extension using a currently-listed universe read 4.22 where the truth was 0.63 —
-survivorship manufacturing the entire result. Answering it needs
-survivorship-free prices. A validation harness for one such source is included
-(`src/mp_validate.py`, `src/mp_gateA.py`); the correct first test is whether that
-data reproduces the 2002–2016 numbers above, before anything it says about 2017+
-is believed.
+The authors' residuals stop at 2016-12. Answering the obvious next question
+needed survivorship-free prices, since a currently-listed universe produced a
+Sharpe of 4.22 where the truth was 0.63.
 
-**Does putting costs in the training objective change the picture?** This is the
-successor paper's central claim, and the one modification aimed at the constraint
-that actually binds. A `COST_BP` flag is wired into the notebook, unrun.
+**Data.** 6,833 daily files from MarketParquet ($79, one-time), 2000-01-03 →
+2026-09-18, 16,003 symbols of which ~60% no longer trade. Validated before use:
 
-**Do multi-horizon holding periods help?** Every net comparison here was decided
-by turnover; three architecture variants were not. The paper's own Section III
-reports Sharpe ~1.5 at a one-month hold.
+| check | result |
+|---|---|
+| delisted names in the 2010 file | 3,527 (vendor claims 3,516) |
+| trading days per year after dropping 115 holiday files | 252/252/251/251/252 — exact NYSE |
+| **residuals vs CRSP, same stock** | **median r = 0.881**, 354 confident matches |
+| same 331 stocks, same days, same code | ours +1.33 vs theirs +1.17 (L=5) |
 
-**Does the successor's 2.3 net survive a per-period split?** It reports no
-subperiod analysis — the same omission this project found decisive in its
-predecessor.
+The last two matter most. An earlier version of this comparison was **compound** —
+strategy Sharpe on our residuals against theirs — which conflates universe,
+construction, and data. Matching stocks first showed our construction reproduces
+theirs; the apparent gap was universe composition (we traded 500 names, their
+file carries 890 active).
 
----
+### The decay is horizon-specific
+
+Reversal Sharpe, gross, on one consistent survivorship-free dataset:
+
+| arm | 2002–2008 | 2009–2016 | 2017–2026 |
+|---|---|---|---|
+| reversal L=1 | +2.81 | +0.85 | **−0.03** |
+| reversal L=5 | +1.87 | +0.87 | +0.36 |
+| reversal L=30 | +0.86 | +0.74 | +0.47 |
+
+One-day reversal — the strongest gross signal in the early era — is **dead**.
+Longer lookbacks decayed more slowly. Short-horizon liquidity provision is where
+competing capital concentrated.
+
+### But choosing K honestly removes what looked like a survivor
+
+The number of PCA factors was fixed at K=5 throughout, because the paper uses it.
+Varying it changes the conclusion:
+
+| K | 2009–2016 net | 2017–2026 net |
+|---|---|---|
+| 1 | +0.38 | +0.19 |
+| 3 | +0.37 | +0.11 |
+| **5** | +0.54 | **+0.37** |
+| 10 | +0.92 | +0.08 |
+| 15 | **+1.09** | +0.09 |
+
+The 2017–2026 values sit within one standard error of each other (SE ≈ 0.32), and
+**+0.37 is the maximum of the set**. Re-selecting K at each retrain from prior
+data only:
+
+| | 2009–2016 net | 2017–2026 net |
+|---|---|---|
+| **walk-forward K** | **+1.01** | **−0.02** |
+| fixed K=5 (hindsight) | +0.54 | +0.37 |
+
+The selector is not broken — in 2009–2016 it picks K=15 consistently and beats
+every fixed choice. In 2017–2026 it churns between values that are
+indistinguishable, because there is nothing stable to select.
+
+**Correction.** This README previously reported that the signal survived at 0.47
+gross / 0.35 net and had stopped decaying, and sized a retail book on it. That
+was hindsight on an untested dimension. **Out of sample, the modern era nets zero.**
+
+### The network does worse than the simple rule
+
+Their CNN+Transformer, their code, trained on the same modern residuals:
+
+| | CNN+Transformer | reversal L=30 |
+|---|---|---|
+| gross 2017–2026 | **+0.05** | +0.47 (K=5) |
+| turnover | 0.80 | 0.25 |
+| net @1bp | **−0.85** | +0.37 |
+| positive periods | 5 of 10 blocks | 9 of 10 years |
+
+Each model is trained from scratch on a **rolling four-year window**, which is the
+paper's spec. By 2020 there is no strong-reversal era left inside that window to
+learn from — so the architecture that scored 4.92 on 1998–2016 residuals has
+nothing to extract. That also implies a real share of the original 4.92 came from
+models trained on 1998–2001.
+
+**Caveat, stated plainly:** this ran at a reduced configuration (30 epochs vs
+their 100, retrain every 250 days vs 125) and on PCA-5 residuals rather than
+their best IPCA arm. The simple benchmarks have no hyperparameters to underfit,
+so the comparison is not symmetric. We have not shown the network fails at the
+paper's own configuration — only that it earns nothing at ours, while a
+zero-parameter rule on identical inputs earns more.
+
+### What the whole thing amounts to
+
+The strategy is paid liquidity provision: somebody must sell urgently, pushes a
+price below where its peers say it belongs, and you warehouse the risk until it
+normalises. That is a service fee, not a mispricing, and service fees compete
+away. Nothing broke — the market got better at absorbing its own shocks.
+
+Next steps and the reasoning behind them: **[NEXT_STEPS.md](NEXT_STEPS.md)**.
 
 ## Reproducing
 
