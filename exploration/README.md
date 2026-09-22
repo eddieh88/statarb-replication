@@ -34,8 +34,8 @@ caught.
 
 | experiment | pre-registered | run | conclusion |
 |---|---|---|---|
-| Step 1 — liquidity deciles | `PREREG_liquidity.md` | no | — |
-| Step 2 — longer holding periods | no | no | — |
+| Step 1 — liquidity deciles | `PREREG_liquidity.md` | yes | **FALSIFIED** — [`FINDINGS_liquidity.md`](FINDINGS_liquidity.md) |
+| Step 2 — longer holding periods | — | — | **dropped** — ACF shows no reversion beyond lag 10 |
 | Step 3 — OSAP characteristics | no | no | — |
 
 Reasoning for the ordering: [`../NEXT_STEPS.md`](../NEXT_STEPS.md).
