@@ -47,3 +47,24 @@ caught.
 | Step 7 — index reversion | `PREREG_market.md` | yes | **DEAD** — [`FINDINGS_market.md`](FINDINGS_market.md); measurement stands, strategy unstable |
 
 Reasoning for the ordering: [`../NEXT_STEPS.md`](../NEXT_STEPS.md).
+
+## The intraday series (E1-E13)
+
+Separate from the nine numbered exploration steps above. Tested on 10.7 GB of
+5-minute data, 2021-2026, and documented in `INTRADAY_LOG.md` — which carries
+the claims, how each was measured, the limitations, and two corrections
+(a friction artifact and a clustered-standard-error mistake).
+
+| file | role |
+|---|---|
+| `INTRADAY_LOG.md` | the record: claims, measurements, limitations, corrections |
+| `PREREG_orb.md`, `PREREG_bos_fvg.md` | the two pre-registered ones |
+| `intraday_build.py` | caches one daily summary table so every test shares definitions |
+| `intraday_levels.py` | prior-day / pre-market level detection, with the advance-and-separation rules |
+| `e2..e13_*.py` | one experiment per file |
+| `render_experiments.py` | regenerates every figure in `figures/` |
+| `diagnostics/` | one-off scripts behind quoted numbers |
+
+**Read `figures/` before the numbers.** Rendering caught three errors that
+every statistical check passed: flat volume in simulated images, a missing
+moving-average line, and 73% of "retests" being the bar after the breakout.
