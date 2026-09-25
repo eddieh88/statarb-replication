@@ -243,6 +243,8 @@ The papers that work share three properties. We had one.
 | structure | factor model / no-arbitrage | free-form |
 | innovation | the objective | Sharpe objective ✓ |
 
+> *Since done — see [characteristic-factors](https://github.com/eddieh88/characteristic-factors). Ambiguous by its pre-registered rule, dead in substance: the tilt it found was beta.*
+
 **The concrete next step is the autoencoder factor model on our own data**, and
 it is well-defined rather than exploratory:
 

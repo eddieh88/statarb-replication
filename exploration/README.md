@@ -36,35 +36,24 @@ caught.
 |---|---|---|---|
 | Step 1 — liquidity deciles | `PREREG_liquidity.md` | yes | **FALSIFIED** — [`FINDINGS_liquidity.md`](FINDINGS_liquidity.md) |
 | Step 2 — longer holding periods | — | — | **dropped** — ACF shows no reversion beyond lag 10 |
-| Step 3 — OSAP characteristics | `PREREG_characteristics.md` | yes | **DEAD** — [`FINDINGS_characteristics.md`](FINDINGS_characteristics.md) |
-
+| Step 3 — OSAP characteristics | yes | yes | **DEAD** — moved to [characteristic-factors](https://github.com/eddieh88/characteristic-factors), which also carries the IPCA / autoencoder follow-up |
 | Step 4 — delayed overshoot | `PREREG_delayed.md` | yes | **DEAD** — [`FINDINGS_delayed.md`](FINDINGS_delayed.md), beats its null, loses to costs |
-
 | Step 5 — intraday | `PREREG_intraday.md` | yes | **NOT INTRADAY** — [`FINDINGS_intraday.md`](FINDINGS_intraday.md); timing decay ~2%, a prior claim retracted |
-
 | Step 6 — continuation | `PREREG_continuation.md` | yes | **DEAD** — [`FINDINGS_continuation.md`](FINDINGS_continuation.md); gross zero both directions |
-
 | Step 7 — index reversion | `PREREG_market.md` | yes | **DEAD** — [`FINDINGS_market.md`](FINDINGS_market.md); measurement stands, strategy unstable |
 
 Reasoning for the ordering: [`../NEXT_STEPS.md`](../NEXT_STEPS.md).
 
-## The intraday series (E1-E13)
+## Moved out
 
-Separate from the nine numbered exploration steps above. Tested on 10.7 GB of
-5-minute data, 2021-2026, and documented in `INTRADAY_LOG.md` — which carries
-the claims, how each was measured, the limitations, and two corrections
-(a friction artifact and a clustered-standard-error mistake).
+Two lines of work began here and outgrew this repository:
 
-| file | role |
-|---|---|
-| `INTRADAY_LOG.md` | the record: claims, measurements, limitations, corrections |
-| `PREREG_orb.md`, `PREREG_bos_fvg.md` | the two pre-registered ones |
-| `intraday_build.py` | caches one daily summary table so every test shares definitions |
-| `intraday_levels.py` | prior-day / pre-market level detection, with the advance-and-separation rules |
-| `e2..e13_*.py` | one experiment per file |
-| `render_experiments.py` | regenerates every figure in `figures/` |
-| `diagnostics/` | one-off scripts behind quoted numbers |
+- **Characteristic factor models** — Step 3 and the IPCA / conditional
+  autoencoder test that followed it:
+  [characteristic-factors](https://github.com/eddieh88/characteristic-factors).
+- **Intraday chart patterns** — eighteen tests of the setups taught in trading
+  education, on 5-minute data:
+  [intraday-patterns](https://github.com/eddieh88/intraday-patterns).
 
-**Read `figures/` before the numbers.** Rendering caught three errors that
-every statistical check passed: flat volume in simulated images, a missing
-moving-average line, and 73% of "retests" being the bar after the breakout.
+Step 5 stays here. It asks whether *this* project's residual overshoot moved to
+intraday frequency, and reads this repository's own residuals.
