@@ -321,13 +321,15 @@ more cheaply — it is no longer required.
 ## Part 3 — what else was tested (`exploration/`)
 
 Six pre-registered experiments, each with its statistic, null and thresholds
-fixed before the data was touched.
+fixed before the data was touched. Two of the six grew into projects of their
+own and now live in separate repositories — see
+[Related repositories](#related-repositories).
 
 | experiment | verdict |
 |---|---|
 | liquidity deciles — does it survive where crowding cannot reach? | **FALSIFIED** — flat across all five bands |
 | longer holding periods | **dropped** — no reversion beyond lag 10 |
-| 209 published characteristics, monthly | **DEAD** — inside its own null |
+| 209 published characteristics, monthly | **DEAD** — inside its own null ([moved →](https://github.com/eddieh88/characteristic-factors)) |
 | delayed overshoot — is it a timing failure? | **DEAD** — beats its null, loses to costs |
 | did the overshoot move intraday? | **NOT INTRADAY** — and it flipped sign |
 | continuation — does the flipped sign pay? | **DEAD** — gross zero in both directions |
@@ -369,6 +371,21 @@ because large moves now continue at lag 1.
 
 Details in [`exploration/`](exploration/), one pre-registration and one findings
 document per step.
+
+## Related repositories
+
+This work started as one repository and split into three when the questions
+stopped being the same question.
+
+| repository | question | answer |
+|---|---|---|
+| **this one** | Does *Deep Learning Statistical Arbitrage* replicate, and does it still work? | Replicates; does not survive past 2016 |
+| [**characteristic-factors**](https://github.com/eddieh88/characteristic-factors) | Do IPCA and the conditional autoencoder pay out of sample? | Ambiguous by the pre-registered rule, dead in substance — the tilt is beta +0.33 |
+| [**intraday-patterns**](https://github.com/eddieh88/intraday-patterns) | Do the chart setups taught in trading education work? | No entry beats a naive momentum rule at the same bar |
+
+The shared thread across all three is the error log. Every repository records
+what went wrong and what caught it, because in this kind of work that is the
+part that transfers.
 
 ## Reproducing
 
