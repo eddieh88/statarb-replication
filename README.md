@@ -156,7 +156,9 @@ short. All are listed in [RESULTS.md](RESULTS.md#method).
 ## Running it
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt   # installs src/ modules + dependencies (torch: pip install -e ".[gpu]")
+git config core.hooksPath hooks   # secret scan + tests before every commit
+python3 -m pytest -q             # unit tests; data checks skip until setup_data.py has run
 python3 setup_data.py          # fetches and masks the authors' residuals (~5 min)
 python3 src/real_ladder.py     # sanity check: the benchmark should land near 0.70
 ```

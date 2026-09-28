@@ -6,7 +6,7 @@ names.  See PREREGISTRATION.md -- this is the whole reason a synthetic null is
 required.
 """
 from __future__ import annotations
-import warnings; warnings.filterwarnings("ignore")
+import warnings
 from pathlib import Path
 import numpy as np, pandas as pd, yfinance as yf
 

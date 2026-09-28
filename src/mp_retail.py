@@ -1,7 +1,7 @@
 """Is the surviving signal tradeable, and at what account size?
 All on survivorship-free residuals, 2017-01-01 .. 2026-09-18."""
+import warnings; warnings.filterwarnings("ignore")
 import numpy as np, pandas as pd, sys
-sys.path.insert(0,'src')
 from real_ladder import windows_and_mask, sharpe, LOOKBACK
 BORROW = 35.0
 

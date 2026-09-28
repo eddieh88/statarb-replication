@@ -9,8 +9,8 @@ rest of the project uses.
 Reported alongside: fixed K=5 (what we quoted), the mean across K (a robust
 estimate), and best-in-hindsight (an upper bound nobody could have traded).
 """
+import warnings; warnings.filterwarnings("ignore")
 import numpy as np, pandas as pd, sys, re, glob
-sys.path.insert(0, "src")
 from real_ladder import windows_and_mask, sharpe, LOOKBACK
 
 KS = [1, 3, 5, 10, 15]

@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "statarb-replication"
+version = "0.1.0"
+description = "Replication and extension of Deep Learning Statistical Arbitrage"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "pyarrow>=12.0",                  # parquet
+    "requests>=2.28",                 # MarketParquet downloads
+    "yfinance>=0.2",                  # rankspace/rankdata.py, src/fetch_big.py, src/fetch_shares.py
+    "pandas_market_calendars>=4.0",   # exact NYSE trading days in setup_data.py
+    "polars>=0.20",                   # src/crosswalk.py
+]
+
+[project.optional-dependencies]
+gpu = ["torch>=2.0"]                  # network arms: src/dlsa2.py, src/xsection_model.py, src/run_xsec_local.py
+notebooks = ["nbformat>=5"]           # archive/ notebook builders
+test = ["pytest>=7"]
+
+# Modules in src/ that other scripts import are installed as top-level modules,
+# so `import real_ladder` works from any folder without editing sys.path.
+[tool.setuptools]
+package-dir = {"" = "src"}
+py-modules = ["dlsa2", "extend", "fileio", "real_ladder", "xsection_model"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

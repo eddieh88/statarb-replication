@@ -3,7 +3,7 @@
 Validate on the 2006-2016 overlap against the authors' residuals; only then
 read the 2017-2026 extension.
 """
-import warnings; warnings.filterwarnings("ignore")
+import warnings
 import numpy as np, pandas as pd, dlsa2 as d, real_ladder as rl
 
 def rev_by_year(E, dates, L):
@@ -19,6 +19,7 @@ def rev_by_year(E, dates, L):
     return s.groupby(s.index.year).apply(lambda x: x.mean()/x.std()*np.sqrt(252))
 
 if __name__ == "__main__":
+    warnings.filterwarnings("ignore")
     # ---- theirs ----
     dt = pd.to_datetime(np.load("dlsa_real/dates.npy"))
     Et = rl.load("PCA-5")

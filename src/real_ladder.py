@@ -10,7 +10,7 @@ the Phi transition matrices needed for the stock-space path are gitignored and
 return 404.  Applied identically to every arm.
 """
 from __future__ import annotations
-import warnings; warnings.filterwarnings("ignore")
+import warnings
 import numpy as np, pandas as pd
 
 LOOKBACK = 30
@@ -83,6 +83,7 @@ def w_ou(W, sel, c_thresh=1.25, c_crit=0.25):
 
 
 if __name__ == "__main__":
+    warnings.filterwarnings("ignore")
     # Harness validation.  The paper evaluates 2002-2016, using 1998-2001 to
     # warm up the rolling window, so that column is the one comparable to their
     # published figures.  The full-sample column is shown for context only --

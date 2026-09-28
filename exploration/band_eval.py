@@ -10,9 +10,9 @@ Thresholds: CONFIRMED  monotone rise over >=3 consecutive bands AND the
             else       AMBIGUOUS, reported as such
 Gross is printed for diagnosis only. No conclusion is drawn from a gross number.
 """
+import warnings; warnings.filterwarnings("ignore")
 import sys, glob, re
 import numpy as np, pandas as pd
-sys.path.insert(0, "src")
 from real_ladder import windows_and_mask, sharpe, LOOKBACK
 
 BANDS = [(1,900),(901,1800),(1801,2700),(2701,3600),(3601,4500)]

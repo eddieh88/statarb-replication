@@ -16,9 +16,9 @@ Sharpe is ~half drift, which our data measures differently -- see README):
   The 2009-2016 figure on THIS data is the like-for-like baseline, not the
   CRSP figure -- same universe rule, same construction, same code.
 """
+import warnings; warnings.filterwarnings("ignore")
 import sys
 import numpy as np, pandas as pd
-sys.path.insert(0, "src")
 from real_ladder import windows_and_mask, sharpe, LOOKBACK
 
 BORROW_BP_YR = 35.0

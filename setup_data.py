@@ -13,6 +13,7 @@ is ~346 MB and is deleted afterwards.  Total runtime a few minutes.
 """
 import os, gzip, shutil, urllib.request, sys
 import numpy as np
+from fileio import atomic_path
 
 RAW = "https://raw.githubusercontent.com/gregzanotti/dlsa-public/main/residuals"
 OUT = "dlsa_real"
@@ -27,7 +28,8 @@ def fetch(url, dst):
     if os.path.exists(dst):
         print(f"  have {os.path.basename(dst)}"); return
     print(f"  downloading {os.path.basename(dst)} ...", flush=True)
-    urllib.request.urlretrieve(url, dst)
+    with atomic_path(dst) as tmp:
+        urllib.request.urlretrieve(url, tmp)
 
 def main(which=("PCA-5",)):
     os.makedirs(OUT, exist_ok=True)
@@ -43,10 +45,11 @@ def main(which=("PCA-5",)):
         gz, raw = f"{OUT}/{name}.gz", f"{OUT}/{name}"
         fetch(f"{RAW}/{sub}/{name}.gz", gz)
         print(f"  decompressing (~346 MB) ...", flush=True)
-        with gzip.open(gz, "rb") as fi, open(raw, "wb") as fo:
+        with atomic_path(raw) as tmp, gzip.open(gz, "rb") as fi, open(tmp, "wb") as fo:
             shutil.copyfileobj(fi, fo)
         r = np.load(raw)
-        np.save(out, np.asarray(r[:, mask], dtype=np.float32))
+        with atomic_path(out) as tmp, open(tmp, "wb") as fh:
+            np.save(fh, np.asarray(r[:, mask], dtype=np.float32))
         print(f"{tag}: {r.shape} -> {r[:, mask].shape}  saved {out}")
         del r
         os.remove(raw); os.remove(gz)          # keep only the compact array

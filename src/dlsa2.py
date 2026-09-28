@@ -12,7 +12,7 @@ Fixes relative to the first attempt:
     even when residual weights are static, because Phi changes daily.
 """
 from __future__ import annotations
-import warnings; warnings.filterwarnings("ignore")
+import warnings
 import numpy as np, pandas as pd, torch, torch.nn as nn
 
 L, PCA_WIN, BETA_WIN, REFIT = 30, 252, 60, 250

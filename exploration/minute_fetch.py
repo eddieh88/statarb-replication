@@ -8,28 +8,34 @@ add nothing usable.
 import os, sys, time, requests
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor
+from fileio import atomic_write_bytes
 
 KEY  = os.path.expanduser("~/.market_parquest/api_key.txt")
 BASE = "https://marketparquet.com/api/v1"
 OUT  = "cache/mp5"
 ASSET = "stock_5min"
 
-def hdrs(): return {"Authorization": f"Bearer {open(KEY).read().strip()}"}
+def hdrs():
+    with open(KEY) as fh:
+        return {"Authorization": f"Bearer {fh.read().strip()}"}
 
 def grab(args):
     d, h = args
     dst = f"{OUT}/{ASSET}_{d}.parquet"
     if os.path.exists(dst) and os.path.getsize(dst) > 10000: return 0
+    error = "no usable response"
     for a in range(3):
         try:
             r = requests.get(f"https://marketparquet.com/api/data/download/{ASSET}/{d}.parquet",
                              headers=h, timeout=240)
             if r.status_code == 200 and len(r.content) > 10000:
-                open(dst, "wb").write(r.content); return len(r.content)
+                atomic_write_bytes(dst, r.content); return len(r.content)
             if r.status_code == 404: return 0
-        except Exception:
+            error = f"HTTP {r.status_code}"
+        except (requests.RequestException, OSError) as e:
+            error = repr(e)
             time.sleep(1 + a)
-    print("  FAILED", d, flush=True)
+    print("  FAILED", d, error, flush=True)
     return 0
 
 def main():

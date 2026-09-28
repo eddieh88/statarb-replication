@@ -6,9 +6,9 @@ fixed BEFORE this data existed -- they are wide because the universe rule differ
 
 If this fails, nothing the data says about 2017-2026 is worth anything.
 """
+import warnings; warnings.filterwarnings("ignore")
 import sys
 import numpy as np, pandas as pd
-sys.path.insert(0, "src")
 from real_ladder import windows_and_mask, port_returns, sharpe, w_ou, LOOKBACK
 
 BANDS = {          # (known CRSP value, low, high)

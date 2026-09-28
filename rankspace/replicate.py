@@ -11,7 +11,7 @@ no cross-sectional signal, so the order-statistic (local-time) effect is present
 in both and only genuine structure can separate them.
 """
 from __future__ import annotations
-import warnings; warnings.filterwarnings("ignore")
+import warnings
 import numpy as np, pandas as pd
 
 TOP_N, PCA_WIN, BETA_WIN, REBAL = 500, 252, 60, 21

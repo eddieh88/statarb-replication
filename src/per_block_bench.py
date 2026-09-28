@@ -3,6 +3,7 @@ boundaries the CNN+Transformer used, so the comparison is apples-to-apples:
   their PCA-5 residuals, residual-space L1 normalisation, TRAIN_LEN=1000,
   RETRAIN_FREQ=250, LOOKBACK=30, blocks start at day 1000 of the window index.
 """
+import warnings; warnings.filterwarnings("ignore")
 import numpy as np, json
 from real_ladder import load, windows_and_mask, port_returns, sharpe, w_ou, LOOKBACK
 
